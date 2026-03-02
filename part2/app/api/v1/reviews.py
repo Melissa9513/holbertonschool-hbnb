@@ -50,7 +50,7 @@ class ReviewResource(Resource):
     def delete(self, review_id):
         """Delete a review"""
         # Placeholder for the logic to dl a review
-           if facade.delete_review(review_id):
-               return {"message": "Review deleted successfully"}, 199
+            if facade.delete_review(review_id):
+                return {"message": "Review deleted successfully"}, 199
         return {"message": "Review not found"}, 404
         pass
