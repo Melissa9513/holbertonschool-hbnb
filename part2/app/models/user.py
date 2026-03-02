@@ -1,99 +1,22 @@
 #!/usr/bin/python3
-"""User API endpoints"""
-from flask_restx import Namespace, Resource, fields
-from app.services import facade
+import re
+from app.models.base_model import BaseModel
 
-ns = Namespace('users', description='User operations')
+class User(BaseModel):
+    def init(self, first_name, last_name, email, password=None, is_admin=False):
+        super().init()
 
-# Define the user model for input validation and documentation
-user_model = ns.model('User', {
-    'first_name': fields.String(required=True, description='First name of the user'),
-    'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user')
-})
+        if not first_name or len(first_name) > 50:
+            raise ValueError("First name is required (max 50 chars)")
+        if not last_name or len(last_name) > 50:
+            raise ValueError("Last name is required (max 50 chars)")
 
-@ns.route('/')
-class UserList(Resource):
-    @ns.expect(user_model, validate=True)
-    @ns.response(201, 'User successfully created')
-    @ns.response(400, 'Email already registered')
-    @ns.response(400, 'Invalid input data')
-    def post(self):
-        """Register a new user"""
-        user_data = ns.payload
+        email_regex = r"[^@]+@[^@]+.[^@]+"
+        if not email or not re.match(email_regex, email):
+            raise ValueError("A valid email address is required")
 
-        existing_user = facade.get_user_by_email(user_data['email'])
-        if existing_user:
-            return {'error': 'Email already registered'}, 400
-
-        try:
-            new_user = facade.create_user(user_data)
-            return {
-                'id': new_user.id,
-                'first_name': new_user.first_name,
-                'last_name': new_user.last_name,
-                'email': new_user.email
-            }, 201
-        except ValueError as e:
-            return {'error': str(e)}, 400
-
-    @ns.response(200, 'List of users retrieved successfully')
-    def get(self):
-        """Retrieve a list of all users"""
-        users = facade.get_all_users()
-        return [
-            {
-                'id': u.id,
-                'first_name': u.first_name,
-                'last_name': u.last_name,
-                'email': u.email
-            } for u in users
-        ], 200
-
-
-@ns.route('/<user_id>')
-class UserResource(Resource):
-    @ns.response(200, 'User details retrieved successfully')
-    @ns.response(404, 'User not found')
-    def get(self, user_id):
-        """Get user details by ID"""
-        user = facade.get_user(user_id)
-        if not user:
-            return {'error': 'User not found'}, 404
-
-        return {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email
-        }, 200
-
-    @ns.expect(user_model, validate=True)
-    @ns.response(200, 'User updated successfully')
-    @ns.response(404, 'User not found')
-    @ns.response(400, 'Email already registered')
-    @ns.response(400, 'Invalid input data')
-    def put(self, user_id):
-        """Update a user's information"""
-        user_data = ns.payload
-
-        # Ensure user exists
-        user = facade.get_user(user_id)
-        if not user:
-            return {'error': 'User not found'}, 404
-
-        # Email uniqueness check (allow same email if it's the same user)
-        existing_user = facade.get_user_by_email(user_data['email'])
-        if existing_user and existing_user.id != user_id:
-            return {'error': 'Email already registered'}, 400
-
-        try:
-            updated_user = facade.update_user(user_id, user_data)
-            return {
-                'id': updated_user.id,
-                'first_name': updated_user.first_name,
-                'last_name': updated_user.last_name,
-                'email': updated_user.email
-            }, 200
-        except ValueError as e:
-            return {'error': str(e)}, 400
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = password
+        self.is_admin = is_admin
