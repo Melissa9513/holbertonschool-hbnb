@@ -48,4 +48,20 @@ class HBnBFacade:
 
         # Persist update in repository
         self.user_repo.update(user_id, user_data)
-        return user 
+        return user
+
+    def update_place(self, place_id, place_data):
+        """Update and return a place"""
+        place = self.get_place(place_id)
+        if not place:
+            return None
+
+        # owner_id is not updatable here (API already blocks it)
+        place.title = place_data['title']
+        place.description = place_data.get('description')
+        place.price = place_data['price']
+        place.latitude = place_data['latitude']
+        place.longitude = place_data['longitude']
+
+        self.place_repo.update(place_id, place_data)
+        return place
