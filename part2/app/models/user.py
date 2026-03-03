@@ -4,8 +4,8 @@ from app.models.base_model import BaseModel
 
 
 class User(BaseModel):
-    def init(self, first_name, last_name, email, password=None, is_admin=False):
-        super().init()
+    def __init__(self, first_name, last_name, email, password=None, is_admin=False):
+        super().__init__()
 
         if not first_name or len(first_name) > 50:
             raise ValueError("First name is required (max 50 chars)")
