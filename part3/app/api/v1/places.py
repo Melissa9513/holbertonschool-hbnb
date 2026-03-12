@@ -2,6 +2,7 @@
 """Place API endpoints"""
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 ns = Namespace('places', description='Place operations')
 
@@ -38,9 +39,16 @@ class PlaceList(Resource):
     @ns.expect(place_model)
     @ns.response(201, 'Place successfully created')
     @ns.response(400, 'Invalid input data')
+    @ns.response(401, 'Bearer token missing or invalid')
+    @jwt_required()
     def post(self):
         """Register a new place"""
         try:
+            current_user_id = get_jwt_identity()
+             place_data = ns.payload
+            
+            place_data['owner_id'] = current_user_id
+
             new_place = facade.create_place(ns.payload)
             return {
                 'id': new_place.id,
@@ -88,20 +96,25 @@ class PlaceResource(Resource):
     @ns.expect(place_model, validate=True)
     @ns.response(200, 'Place updated successfully')
     @ns.response(404, 'Place not found')
+    @ns.response(403, 'Unauthorized: Only the owner can update this place')
     @ns.response(400, 'Invalid input data')
+    @jwt_required()
     def put(self, place_id):
         """Update a place's information"""
+        current_user_id = get_jwt_identity()
         place_data = ns.payload
 
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
+       
+        if place.owner.id != current_user_id:
+            return {'error': 'You are not authorized to update this place'}, 403
 
-        # On bloque le changement de owner_id dans cette version
-        if place_data.get('owner_id') != place.owner.id:
-            return {'error': 'owner_id cannot be updated'}, 400
-
-        try:
+        if 'owner_id' in place_data and place_data['owner_id'] != place.owner.id:
+          return {'error': 'owner_id cannot be updated'}, 400
+       
+      try:
             updated_place = facade.update_place(place_id, place_data)
             return {
                 'id': updated_place.id,
