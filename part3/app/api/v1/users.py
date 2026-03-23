@@ -35,7 +35,7 @@ class UserList(Resource):
         """Register a new user"""
         user_data = ns.payload
 
-         if user_data.get('is_admin', False):
+        if user_data.get('is_admin', False):
             # Auth required for admin creation
             claims = get_jwt()
             if not claims or not claims.get('is_admin', False):
@@ -48,7 +48,7 @@ class UserList(Resource):
         if 'password' not in user_data or not user_data['password']:
             return {'error': 'Password is required'}, 400
        
-       try:
+        try:
             new_user = facade.create_user(user_data)
             
         except (TypeError, ValueError) as e:
@@ -71,8 +71,8 @@ class UserList(Resource):
         return [u.to_dict() for u in users], 200
 
 
-    @ns.route('/<user_id>')
-    class UserResource(Resource):
+@ns.route('/<user_id>')
+class UserResource(Resource):
 
     @ns.marshal_with(user_output_model)
     @ns.response(200, 'User details retrieved successfully')
@@ -97,7 +97,7 @@ class UserList(Resource):
         current_user_id = get_jwt_identity()
         claims = get_jwt()
         is_admin = claims.get('is_admin', False)
-
+ 
         
         user = facade.get_user(user_id)
         if not user:
