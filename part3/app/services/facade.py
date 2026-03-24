@@ -3,6 +3,10 @@
 Facade module for handling business logic and repository interactions.
 """
 from app.persistence.repository import InMemoryRepository
+from app.persistence.user_repostory import InMemoryRepository
+from app.persistence.place_repostory import InMemoryRepository
+from app.persistence.review_repostory import InMemoryRepository
+from app.persistence.amenity_repostory import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -17,9 +21,7 @@ class HBnBFacade:
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
 
-    # -------------------------
-    # Users
-    # -------------------------
+   
     def create_user(self, user_data):
         user = User(**user_data)
         self.user_repo.add(user)
@@ -46,11 +48,9 @@ class HBnBFacade:
         self.user_repo.update(user_id, user_data)
         return user
 
-    # -------------------------
-    # Amenities
-    # -------------------------
+
     def create_amenity(self, amenity_data):
-        amenity = Amenity(**amenity_data)  # expects {"name": "..."}
+        amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
         return amenity
 
@@ -71,9 +71,7 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, amenity_data)
         return amenity
 
-    # -------------------------
-    # Places
-    # -------------------------
+    
     def create_place(self, place_data):
         owner = self.get_user(place_data.get('owner_id'))
         if not owner:
@@ -106,9 +104,6 @@ class HBnBFacade:
         self.place_repo.update(place_id, place_data)
         return place
 
-    # -------------------------
-    # Reviews
-    # -------------------------
     def create_review(self, review_data):
         user = self.get_user(review_data.get('user_id'))
         place = self.get_place(review_data.get('place_id'))
@@ -123,7 +118,6 @@ class HBnBFacade:
         )
         self.review_repo.add(review)
 
-        # Keep Place object consistent
         place.add_review(review)
         return review
 
