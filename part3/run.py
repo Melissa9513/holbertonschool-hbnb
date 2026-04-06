@@ -1,6 +1,7 @@
 from app import create_app, db
+from config import DevelopmentConfig
 
-app = create_app()
+app = create_app(DevelopmentConfig)
 with app.app_context():
     db.create_all()
 
