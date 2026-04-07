@@ -22,20 +22,22 @@ class User(BaseModel):
         if not last_name or len(last_name) > 50:
             raise ValueError("Last name is required (max 50 chars)")
 
-        email_regex = r"[^@]+@[^@]+.[^@]+"
+        email_regex = r"[^@]+@[^@]+\.[^@]+"
         if not email or not re.match(email_regex, email):
             raise ValueError("A valid email address is required")
 
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.password = password
         self.is_admin = is_admin
 
-   def hash_password(self, password):
+        if password:
+            self.hash_password(password)
+
+    def hash_password(self, password):
         """Hashes the password before storing it."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
         """Verifies if the provided password matches the hashed password."""
-        return bcrypt.check_password_hash(self.password.encode('utf-8'), password)
+        return bcrypt.check_password_hash(self.password, password)
