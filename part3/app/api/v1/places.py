@@ -94,6 +94,9 @@ class PlaceResource(Resource):
         data = ns.payload
         current_user_id = get_jwt_identity()
 
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+
         if not current_user_id:
             return {"error": "Unauthorized"}, 403
 
@@ -105,8 +108,32 @@ class PlaceResource(Resource):
             return {"error": "You cannot modify the owner of a place"}, 400
 
         
-        if place.owner_id != current_user_id:
+        if not is_admin and place.owner_id != current_user_id:
             return {"error": "You can only update your own places"}, 403
 
-        update_place = facade.update_place(place_id, data)
-        return update_place.to_dict(), 200
+        try:
+           update_place = facade.update_place(place_id, data)
+           return update_place.to_dict(), 200
+        except ValueError as e:
+            return {"error": str(e)}, 400
+    
+    @ns.response(204, 'Place deleted successfully')
+    @ns.response(404, 'Place not found')
+    @ns.response(403, 'Unauthorized action')
+    @ns.doc(security='Bearer')
+    @jwt_required()
+    def delete(self, place_id):
+        """Delete a place - Owner or Admin only"""
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+
+        place = facade.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+
+        if not is_admin and place.owner_id != current_user_id:
+            return {"error": "You can only delete your own places"}, 403
+
+        facade.delete_place(place_id)
+        return '', 204 

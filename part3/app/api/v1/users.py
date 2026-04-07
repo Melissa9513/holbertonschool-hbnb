@@ -9,7 +9,7 @@ ns = Namespace('users', description='User operations')
 user_input_model = ns.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user')
+    'email': fields.String(required=True, description='Email of the user'),
     'password': fields.String(required=True, description='Password of the user (min 8 chars)'),
     'is_admin': fields.Boolean(required=False, description='Admin status (admin auth required if true)')
 })
@@ -24,7 +24,7 @@ user_output_model = ns.model('User', {
 
 @ns.route('/')
 class UserList(Resource):
-    @ns.expect(user_model, validate=True)
+    @ns.expect(user_input_model, validate=True)
     @ns.response(201, 'User successfully created')
     @ns.response(400, 'Email already registered')
     @ns.response(400, 'Invalid input data')
