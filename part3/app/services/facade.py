@@ -3,6 +3,7 @@
 Facade module for handling business logic and repository interactions.
 """
 from app.persistence.repository import SQLAlchemyRepository
+from app.persistence.user_repository import UserRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
@@ -11,7 +12,7 @@ from app.models.review import Review
 class HBnBFacade:
     def __init__(self):
         """Initialize repositories"""
-        self.user_repo = SQLAlchemyRepository(User)
+        self.user_repo = UserRepository()
         self.amenity_repo = SQLAlchemyRepository(Amenity)
         self.place_repo = SQLAlchemyRepository(Place)
         self.review_repo = SQLAlchemyRepository(Review)
@@ -26,23 +27,13 @@ class HBnBFacade:
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
 
     def get_all_users(self):
         return self.user_repo.get_all()
 
     def update_user(self, user_id, user_data):
-        user = self.get_user(user_id)
-        if not user:
-            return None
-
-        user.first_name = user_data['first_name']
-        user.last_name = user_data['last_name']
-        user.email = user_data['email']
-
-        self.user_repo.update(user_id, user_data)
-        return user
-
+        return self.user_repo.update(user_id, user_data)
 
     def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)

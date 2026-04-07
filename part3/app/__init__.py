@@ -41,9 +41,9 @@ def create_app(config_class="config.DevelopmentConfig"):
               version='1.0',
               title='HBnB API',
               description='HBnB Application API Documentation',
-              doc='/api/v1/'
+              doc='/api/v1/',
               authorizations=authorizations,
-               security='Bearer'
+              security='Bearer'
               )
     
     api.add_namespace(users_ns, path='/api/v1/users')
