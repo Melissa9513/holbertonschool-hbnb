@@ -2,25 +2,19 @@
 """
 Facade module for handling business logic and repository interactions.
 """
-from app.persistence.repository import InMemoryRepository
-from app.persistence.user_repostory import InMemoryRepository
-from app.persistence.place_repostory import InMemoryRepository
-from app.persistence.review_repostory import InMemoryRepository
-from app.persistence.amenity_repostory import InMemoryRepository
+from app.persistence.repository import SQLAlchemyRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
-from app.persistence.repository import SQLAlchemyRepository
-from hbnb.app.extensions import db
 
 class HBnBFacade:
     def __init__(self):
         """Initialize repositories"""
-        self.user_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
+        self.user_repo = SQLAlchemyRepository(User)
+        self.amenity_repo = SQLAlchemyRepository(Amenity)
+        self.place_repo = SQLAlchemyRepository(Place)
+        self.review_repo = SQLAlchemyRepository(Review)
 
    
     def create_user(self, user_data):
