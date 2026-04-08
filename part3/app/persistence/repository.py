@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from hbnb.app.extensions import db
-from hbnb.app.models.user import User
-from hbnb.app.models.place import Place
-from hbnb.app.models.review import Review
-from hbnb.app.models.amenity import Amenity
+from app.extensions import db
+from app.models.user import User
+from app.models.place import Place
+from app.models.review import Review
+from app.models.amenity import Amenity
 
 class Repository(ABC):
     @abstractmethod
