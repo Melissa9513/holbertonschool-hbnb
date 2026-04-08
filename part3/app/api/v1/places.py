@@ -70,8 +70,7 @@ class PlaceResource(Resource):
     @ns.response(200, 'Place details retrieved successfully')
     @ns.response(404, 'Place not found')
     def get(self, place_id):
-    tuple: Place data with owner and amenities, or error, and status code.
-        
+         
         try:
             place = facade.get_place(place_id)
             if not place:

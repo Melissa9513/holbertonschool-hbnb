@@ -117,7 +117,7 @@ class ReviewResource(Resource):
             return {"error": "You can only update your own reviews"}, 403
 
         try:
-            review_data = api.payload
+            review_data = ns.payload
 
             if 'rating' in review_data and not (1 <= review_data['rating'] <= 5):
                 return {'error': 'Rating must be between 1 and 5'}, 400
