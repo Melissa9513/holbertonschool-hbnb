@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Amenity module"""
 from app.models.base_model import BaseModel
-from hbnb.app.extensions import db
+from app import db
 
 class Amenity(BaseModel):
     """Amenity entity (e.g., Wi-Fi, Parking)."""

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Place module"""
 from app.models.base_model import BaseModel
+from app import db
 
 class Place(BaseModel):
     """Place entity representing property listings."""

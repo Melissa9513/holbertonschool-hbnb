@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import re
-from .base_model import BaseModel
+from app.models.base_model import BaseModel
 from app import db, bcrypt
 
 class User(BaseModel):
