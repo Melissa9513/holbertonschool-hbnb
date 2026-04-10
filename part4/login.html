@@ -17,22 +17,26 @@
 </nav>
 
 <main>
-    <form>
+    <form id="login-form">
         <h2>Login</h2>
 
         <label>Email:</label>
-        <input type="email" required>
+        <input type="email" id="email" required>
 
         <label>Password:</label>
-        <input type="password" required>
+        <input type="password" id="password" required>
 
         <button type="submit">Login</button>
+
+        <p id="error-message" style="color:red;"></p>
     </form>
 </main>
 
 <footer>
     <p>All rights reserved</p>
 </footer>
+
+<script src="scripts.js"></script>
 
 </body>
 </html>
